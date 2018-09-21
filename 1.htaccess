@@ -1,0 +1,134 @@
+DirectoryIndex index.php index.html
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+# RewriteBase /basepath/
+RewriteCond $1 !^(index\.php|assets|install|update)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# For godady Shared Hosting Server uncomment the line below
+RewriteRule ^(.*)$ index.php?/$1 [L]
+
+# Please comment this if you have uncommented the above
+# RewriteRule ^(.*)$ index.php/$1 [NC,L,QSA]
+
+</IfModule>
+
+<ifModule mod_headers.c>
+    Header set Connection keep-alive
+</ifModule>
+
+<IfModule mod_headers.c>
+    Header set X-UA-Compatible "IE=edge"
+
+    <FilesMatch "\.(appcache|atom|crx|css|cur|eot|f4[abpv]|flv|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|tt[cf]|vcf|vtt|webapp|web[mp]|woff|xml|xpi)$">
+        Header unset X-UA-Compatible
+    </FilesMatch>
+</IfModule>
+
+<ifModule mod_gzip.c>
+  mod_gzip_on Yes
+  mod_gzip_dechunk Yes
+  mod_gzip_item_include file \.(html?|css|js|php)$
+  mod_gzip_item_include handler ^cgi-script$
+  mod_gzip_item_include mime ^text/.*
+  mod_gzip_item_include mime ^application/x-javascript.*
+  mod_gzip_item_exclude mime ^image/.*
+  mod_gzip_item_exclude rspheader ^Content-Encoding:.*gzip.*
+</ifModule>
+
+<IfModule mod_mime.c>
+# Audio
+AddType audio/mp3 m4a f4a f4b
+AddType audio/ogg oga ogg
+ 
+# JavaScript
+AddType application/javascript js jsonp
+AddType application/json json
+ 
+# Video
+AddType video/mp4 mp4 m4v f4v f4p
+AddType video/ogg ogv
+AddType video/webm webm
+AddType video/x-flv flv
+
+
+
+<IfModule mod_php4.c>
+    php_flag zlib.output_compression on
+    php_value zlib.output_compression_level 2
+</IfModule>
+
+# Secure php.ini and .htaccess
+RewriteRule ^(php\.ini|\.htaccess) - [NC,F]
+Header set X-XSS-Protection "1; mode=block"
+
+#Redirecting common scanner bots as well as malacious input to where they should be targeted to.
+<IfModule mod_rewrite.c>
+RewriteCond %{HTTP_USER_AGENT} ^w3af.sourceforge.net [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} dirbuster [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} nikto [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} sqlmap [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} fimap [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} nessus [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} whatweb [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} Openvas [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} jbrofuzz [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} libwhisker [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} webshag [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (havij|Netsparker|libwww-perl|python|nikto|curl|scan|java|winhttp|clshttp|loader) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (%0A|%0D|%27|%3C|%3E|%00) [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} (;|<|>|'|"|\)|\(|%0A|%0D|%22|%27|%28|%3C|%3E|%00).*(libwww-perl|python|nikto|curl|scan|java|winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner) [NC,OR]
+RewriteCond %{REQUEST_URI} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
+RewriteCond %{REQUEST_URI} (<|%3C)([^e]*e)+mbed.*(>|%3E) [NC,OR]
+RewriteCond %{REQUEST_URI} (<|%3C)([^o]*o)+bject.*(>|%3E) [NC,OR]
+RewriteCond %{REQUEST_URI} (<|%3C)([^i]*i)+frame.*(>|%3E) [NC,OR]
+RewriteCond %{REQUEST_URI} base64_(en|de)code[^(]*\([^)]*\) [NC,OR]
+RewriteCond %{REQUEST_URI} (%0A|%0D|\\r|\\n) [NC,OR]
+RewriteCond %{REQUEST_URI} union([^a]*a)+ll([^s]*s)+elect [NC]
+RewriteCond %{HTTP:Acunetix-Product} ^WVS
+RewriteRule ^(.*)$ http://127.0.0.1 [R=301,L]
+</IfModule>
+RewriteCond %{QUERY_STRING} ^.*acunetix.*$
+RewriteRule ^(.*)$ index.php [F,L]
+
+# Ban Non-GUI Browsers
+RewriteCond %{HTTP_USER_AGENT} ^.*(lynx|wget).* [NC,OR]
+
+# Ban Typical Vulnerability Scanners and others CLOSED SEO KIRY
+#RewriteCond %{HTTP_USER_AGENT} ^()$ [NC,OR] # void of UserAgent
+
+# Known Web vulnerabilty Scanners
+RewriteCond %{HTTP_USER_AGENT} ^.*(syhunt|sqlmap|WhatWeb|Netsparker|w3af|Nstalker|acunetix|qualys|nikto|wikto|pikto|pykto).* [NC,OR]
+
+# Random Underground Web Exploit Scanners
+RewriteCond %{HTTP_USER_AGENT} ^.*(javascript\:alert|0d\s0a|ZeW|SlimBrowser|drone|DataCha|SBIder|Shelob|MobileRunner|Microsoft\sOffice|Plesk|Itah|Mosill|Internet\sExplorer\s4\.01|al_viewer|NetSeer|MSFrontPage|Yandex|webcollage|lwp\-trivial|Isidorus|core\-project|\<script\>|Toata\sdragostea\smea\spentru\sdiavola|StackRambler|Firebat|Y\!J\-SRD|ZmEu|libwww|perl|java|curl|ruby|python|scan|kiss|ass|Morfeus|0wn|hack|h4x|h4x0r).* [NC,OR]
+
+# Denial-of-Service Tool
+RewriteCond %{HTTP_USER_AGENT} ^.*(ApacheBench).* [NC,OR]
+RewriteCond %{HTTP_USER_AGENT} ^.*(WWW\-Mechanize|revolt|Crawl|Mail\.Ru|Walker|sbide|findlinks|spide|Ace\sExplorer|winhttp|HTTrack|clshttp|archiver|loader|email|harvest|extract|grab|miner).* [NC,OR]
+
+# Block bypass URL
+#RewriteCond %{HTTP_USER_AGENT} libwww [NC,OR]
+#RewriteCond %{QUERY_STRING} ^(.*)=http [NC]
+#RewriteRule ^(.*)$ – [F,L]
+
+# Anti XSS protection
+# For security reasons, Option followsymlinks cannot be overridden.
+#Options +FollowSymLinks
+Options +SymLinksIfOwnerMatch
+RewriteCond %{QUERY_STRING} base64_encode.*\(.*\) [OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+RewriteRule ^(.*)$ 403.shtml [F,L]
+RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+
+# Block shell uploaders, htshells, and other baddies
+RewriteCond %{REQUEST_URI} ((php|my|bypass)?shell|remview.*|phpremoteview.*|sshphp.*|pcom|nstview.*|c99|c100|r57|webadmin.*|phpget.*|phpwriter.*|fileditor.*|locus7.*|storm7.*)\.(p?s?x?htm?l?|txt|aspx?|cfml?|cgi|pl|php[3-9]{0,1}|jsp?|sql|xml) [NC,OR]
+RewriteCond %{REQUEST_URI} (\.exe|\.php\?act=|\.tar|_vti|afilter=|algeria\.php|chbd|chmod|cmd|command|db_query|download_file|echo|edit_file|eval|evil_root|exploit|find_text|fopen|fsbuff|fwrite|friends_links\.|ftp|gofile|grab|grep|htshell|\ -dump|logname|lynx|mail_file|md5|mkdir|mkfile|mkmode|MSOffice|muieblackcat|mysql|owssvr\.dll|passthru|popen|proc_open|processes|pwd|rmdir|root|safe0ver|search_text|selfremove|setup\.php|shell|ShellAdresi\.TXT|spicon|sql|ssh|system|telnet|trojan|typo3|uname|unzip|w00tw00t|whoami|xampp) [NC,OR]
+RewriteCond %{QUERY_STRING} (\.exe|\.tar|act=|afilter=|alter|benchmark|chbd|chmod|cmd|command|cast|char|concat|convert|create|db_query|declare|delete|download_file|drop|edit_file|encode|environ|eval|exec|exploit|find_text|fsbuff|ftp|friends_links\.|globals|gofile|grab|insert|localhost|logname|loopback|mail_file|md5|meta|mkdir|mkfile|mkmode|mosconfig|muieblackcat|mysql|order|passthru|popen|proc_open|processes|pwd|request|rmdir|root|scanner|script|search_text|select|selfremove|set|shell|sql|sp_executesql|spicon|ssh|system|telnet|trojan|truncate|uname|union|unzip|whoami) [NC] 
+RewriteRule .* - [F]

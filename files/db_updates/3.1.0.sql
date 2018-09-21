@@ -1,0 +1,12 @@
+ALTER TABLE `erp_categories` ADD `slug` VARCHAR(55) NOT NULL;
+update `erp_categories` set slug = REPLACE(LOWER(name), ' ', '-');
+ALTER TABLE `erp_brands` ADD `slug` VARCHAR(55) NOT NULL;
+update `erp_brands` set slug = REPLACE(LOWER(name), ' ', '-');
+ALTER TABLE `erp_products` ADD `slug` VARCHAR(55) NOT NULL, ADD `featured` TINYINT(1) NULL, ADD `weight` DECIMAL(10,4) NULL;
+update `erp_products` set slug = REPLACE(LOWER(name), ' ', '-');
+ALTER TABLE `erp_currencies` ADD `symbol` VARCHAR(50) NULL;
+ALTER TABLE `erp_settings` ADD `apis` TINYINT(1) NOT NULL DEFAULT '0';
+ALTER TABLE `erp_companies` CHANGE `address` `address` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL, CHANGE `city` `city` VARCHAR(55) CHARACTER SET utf8 COLLATE utf8_general_ci NULL, CHANGE `phone` `phone` VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+ALTER TABLE `erp_sales` ADD `api` TINYINT(1) NULL, ADD `shop` TINYINT(1) NULL, ADD `address_id` INT NULL, ADD `reserve_id` INT NULL, ADD `hash` VARCHAR(255) NULL;
+ALTER TABLE `erp_quotes` ADD `hash` VARCHAR(255) NULL;
+UPDATE `erp_settings` SET `version` = '3.1.0' WHERE `setting_id` = 1;
